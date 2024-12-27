@@ -14,6 +14,8 @@ using DataFrames
 using JLD2
 using CSV
 using FileIO
+using Distances
+
 
 # load my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
