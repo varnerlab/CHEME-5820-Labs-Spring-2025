@@ -15,6 +15,10 @@ using JLD2
 using CSV
 using FileIO
 using Distances
+using Images
+using LinearAlgebra
+using Statistics
+using StatsPlots
 
 
 # load my codes -
