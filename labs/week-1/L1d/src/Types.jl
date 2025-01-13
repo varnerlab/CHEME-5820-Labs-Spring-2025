@@ -1,17 +1,17 @@
-abstract type MyAbstractDataReductioModel end
+abstract type MyAbstractUnsupervisedClusteringAlgorithm end
 
-mutable struct MySimpleRectangularSelfOrganizingMapModel <: MyAbstractDataReductioModel
+
+mutable struct MyNaiveKMeansClusteringAlgorithm <: MyAbstractUnsupervisedClusteringAlgorithm
+
     # data -
-    number_of_neurons::Int
-    weights::Array{Float64,2}; # weights has the shape of (number_of_neurons, number_of_features)
-    neurons::Dict{Int, Tuple{Int,Int}} # states of the neurons
-    coordinates::Dict{Tuple{Int,Int}, Int} # coordinates of the neurons
-
-    # behavior -
-    h::Function # neighborhood function
-    α::Function # learning rate function
-    σ::Function # neighborhood radius function
+    K::Int64 # number of clusters
+    centroids::Dict{Int64, Vector{Float64}} # cluster centroids
+    assignments::Vector{Int64} # cluster assignments
+    ϵ::Float64 # convergence criteria
+    maxiter::Int64 # maximum number of iterations (alternatively, could use this convergence criterion)
+    dimension::Int64 # dimension of the data
+    number_of_points::Int64 # number of data points
 
     # constructor -
-    MySimpleRectangularSelfOrganizingMapModel() = new();
+    MyNaiveKMeansClusteringAlgorithm() = new(); # build empty object
 end

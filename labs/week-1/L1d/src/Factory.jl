@@ -1,48 +1,36 @@
-
-function build(modeltype::Type{MySimpleRectangularSelfOrganizingMapModel}, data::NamedTuple)::MySimpleRectangularSelfOrganizingMapModel
-
-    # build an empty model -
-    model = modeltype(); # this constructs an empty model, we need to fill it with data
-
-    # initialize -
-    number_of_neurons = data.number_of_neurons;
-    number_of_features = data.number_of_features;
-    number_of_nodes = sqrt(number_of_neurons);
+function build(modeltype::Type{MyNaiveKMeansClusteringAlgorithm}, data::NamedTuple)::MyNaiveKMeansClusteringAlgorithm
     
-    # functions -
-    h = data.h; # neighborhood function
-    α = data.α; # learning rate function
-    σ = data.σ; # neighborhood radius function
+    # build an empty model -
+    model = modeltype();
 
-    # weights -
-    weights = randn(number_of_neurons, number_of_features);
+    # get data -
+    K = data.K;
+    ϵ = data.ϵ;
+    maxiter = data.maxiter;
+    dimension = data.dimension;
+    number_of_points = data.number_of_points;
+    SF = data.scale_factor;
 
-    # build the neurons dictionary -
-    neurons = Dict{Int, Tuple{Int,Int}}();
-    linearindex = 1;
-    for i ∈ 1:number_of_nodes
-        for j ∈ 1:number_of_nodes
-            neurons[linearindex] = (i,j);
-            linearindex += 1;
-        end
+    # setup the initial assignments -
+    assignments = zeros(Int64, number_of_points);
+    for i ∈ 1:number_of_points
+        assignments[i] = rand(1:K); # randomly assign points to clusters
     end
 
-    # build the coordinates dictionary -
-    coordinates = Dict{Tuple{Int,Int}, Int}();
-    for (k, v) ∈ neurons
-        coordinates[v] = k;
+    # setup the centriods -
+    centroids = Dict{Int64, Vector{Float64}}();
+    for k ∈ 1:K
+        centroids[k] = SF*rand(Float64, dimension); # randomly generate the centriods
     end
 
-
-    # fill the model -
-    model.number_of_neurons = number_of_neurons;
-    model.weights = weights;
-    model.h = h;
-    model.α = α;
-    model.σ = σ;
-    model.neurons = neurons;
-    model.coordinates = coordinates;
-
+    # set the data on the model -
+    model.K = K;
+    model.ϵ = ϵ;
+    model.maxiter = maxiter;
+    model.dimension = dimension;
+    model.number_of_points = number_of_points;
+    model.assignments = assignments;
+    model.centroids = centroids;
 
     # return the model -
     return model;
