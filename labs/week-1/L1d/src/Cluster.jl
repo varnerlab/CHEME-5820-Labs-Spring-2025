@@ -62,6 +62,28 @@ function _cluster(data::Array{<:Number,2}, algorithm::MyNaiveKMeansClusteringAlg
     return (assignments = algorithm.assignments, centroids = algorithm.centroids, loopcount = loopcount);
 end
 
+"""
+    cluster(data::Array{<:Number,2}, algorithm::{<:MyAbstractUnsupervisedClusteringAlgorithm}; d = Euclidean(), verbose::Bool = false)
+"""
 function cluster(data::Array{<:Number,2}, algorithm::T; d = Euclidean(), verbose::Bool = false) where T <: MyAbstractUnsupervisedClusteringAlgorithm
     return _cluster(data, algorithm, d = d, verbose = verbose);
+end
+
+function myinertia(data::Array{<:Number,2}, assignments::Array{Int64,1}, centroids::Dict{Int64, Vector{Float64}}; 
+    d = Euclidean())::Float64
+    
+    K = length(centroids); # number of clusters -
+    inertia = 0.0;
+    
+    # compute the inertia -
+    for k ∈ 1:K
+        index_cluter_k = findall(x-> x == k, assignments); # index of the data vectors assigned to cluster k
+        for i ∈ eachindex(index_cluter_k)
+            j = index_cluter_k[i];
+            inertia += d(data[j,:], centroids[k]);
+        end
+    end
+    
+    # return the inertia -
+    return inertia;
 end

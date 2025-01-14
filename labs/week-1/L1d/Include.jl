@@ -19,6 +19,7 @@ using Images
 using LinearAlgebra
 using Statistics
 using StatsPlots
+using Clustering
 
 
 # load my codes -
