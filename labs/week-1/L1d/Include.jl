@@ -20,6 +20,7 @@ using LinearAlgebra
 using Statistics
 using StatsPlots
 using Clustering
+using PrettyTables
 
 
 # load my codes -
