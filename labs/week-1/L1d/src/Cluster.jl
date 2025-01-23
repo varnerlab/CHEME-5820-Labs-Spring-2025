@@ -64,26 +64,43 @@ end
 
 """
     cluster(data::Array{<:Number,2}, algorithm::{<:MyAbstractUnsupervisedClusteringAlgorithm}; d = Euclidean(), verbose::Bool = false)
+
+
 """
 function cluster(data::Array{<:Number,2}, algorithm::T; d = Euclidean(), verbose::Bool = false) where T <: MyAbstractUnsupervisedClusteringAlgorithm
     return _cluster(data, algorithm, d = d, verbose = verbose);
 end
 
-function myinertia(data::Array{<:Number,2}, assignments::Array{Int64,1}, centroids::Dict{Int64, Vector{Float64}}; 
+"""
+    configurationenergy(data::Array{<:Number,2}, assignments::Array{Int64,1}, centroids::Dict{Int64, Vector{Float64}}; d = Euclidean())::Float64
+
+The function computes the energy of the configuration of the data points given the assignments and the centroids.
+
+### Arguments
+- `data::Array{<:Number,2}`: A matrix of size `(N, D)` where `N` is the number of data points and `D` is the dimension of the data points.
+- `assignments::Array{Int64,1}`: A vector of size `N` where each element is the cluster assignment of the corresponding data point.
+- `centroids::Dict{Int64, Vector{Float64}}`: A dictionary where the keys are the cluster indices and the values are the centroids of the clusters.
+- `d::MyAbstractDistanceMetric = Euclidean()`: A distance metric. Default is `Euclidean()`.
+
+### Returns
+- `Float64`: The energy of the configuration.
+"""
+function configurationenergy(data::Array{<:Number,2}, assignments::Array{Int64,1}, centroids::Dict{Int64, Vector{Float64}}; 
     d = Euclidean())::Float64
     
+    # initialize -
     K = length(centroids); # number of clusters -
-    inertia = 0.0;
+    energy = 0.0;
     
-    # compute the inertia -
+    # compute the energy -
     for k ∈ 1:K
         index_cluter_k = findall(x-> x == k, assignments); # index of the data vectors assigned to cluster k
         for i ∈ eachindex(index_cluter_k)
             j = index_cluter_k[i];
-            inertia += d(data[j,:], centroids[k]);
+            energy += d(data[j,:], centroids[k])^2;
         end
     end
     
-    # return the inertia -
-    return inertia;
+    # return the energy -
+    return energy;
 end
