@@ -1,3 +1,23 @@
+"""
+    build(modeltype::Type{MyNaiveKMeansClusteringAlgorithm}, data::NamedTuple)::MyNaiveKMeansClusteringAlgorithm
+
+Build a naive k-means clustering model.
+
+### Arguments
+- `modeltype::Type{MyNaiveKMeansClusteringAlgorithm}`: The type of the model to build.
+- `data::NamedTuple`: The data to use to build the model.
+
+The `data::NamedTuple` must contain the following fields:
+- `K::Int64`: The number of clusters to create.
+- `ϵ::Float64`: The convergence threshold.
+- `maxiter::Int64`: The maximum number of iterations.
+- `dimension::Int64`: The dimension of the data.
+- `number_of_points::Int64`: The number of data points.
+- `scale_factor::Float64`: The scale factor to use when generating the initial centroids.
+
+### Returns
+- `model::MyNaiveKMeansClusteringAlgorithm`: The naive k-means clustering model with populated (initial) centroids and assignments.
+"""
 function build(modeltype::Type{MyNaiveKMeansClusteringAlgorithm}, data::NamedTuple)::MyNaiveKMeansClusteringAlgorithm
     
     # build an empty model -

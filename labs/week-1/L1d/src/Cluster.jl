@@ -1,5 +1,5 @@
 
-
+# -- PRIVATE API BELOW HERE ----------------------------------------------------------------------------------------------------- #
 function _cluster(data::Array{<:Number,2}, algorithm::MyNaiveKMeansClusteringAlgorithm; 
     d = Euclidean(), verbose::Bool = false)
     
@@ -61,11 +61,24 @@ function _cluster(data::Array{<:Number,2}, algorithm::MyNaiveKMeansClusteringAlg
     # return the model -
     return (assignments = algorithm.assignments, centroids = algorithm.centroids, loopcount = loopcount);
 end
+# -- PRIVATE API ABOVE HERE ----------------------------------------------------------------------------------------------------- #
+
+# -- PUBLIC API BELOW HERE ------------------------------------------------------------------------------------------------------ #
 
 """
-    cluster(data::Array{<:Number,2}, algorithm::{<:MyAbstractUnsupervisedClusteringAlgorithm}; d = Euclidean(), verbose::Bool = false)
+    cluster(data::Array{<:Number,2}, algorithm::MyNaiveKMeansClusteringAlgorithm; d = Euclidean(), verbose::Bool = false)
 
+This function clusters the data using the K-Means algorithm. This method calls the a helper function corresponding to the algorithm passed in as an argument. 
+The helper function is responsible for implementing the clustering logic.
 
+### Arguments
+- `data::Array{<:Number,2}`: A 2D array of data points that we will cluster. Features are along the columns and data points are along the rows.
+- `algorithm::T: Which algorithm to use for the clustering logic. Must be a subtype of `MyAbstractUnsupervisedClusteringAlgorithm`.
+- `d::MyAbstractDistanceMetric = Euclidean()`: The distance metric to use for the clustering algorithm. This is an optional argument and defaults to the Euclidean distance.
+- `verbose::Bool = false`: If true, the function will dump the data to disk at each iteration. This is an optional argument and defaults to false.
+
+### Returns
+- A tuple of the form `(assignments = algorithm.assignments, centroids = algorithm.centroids, loopcount = loopcount)`. The `assignments` field is a 1D array of integers that tells us which cluster each data point belongs to. The `centroids` field is dictionary holding the centroids of the clusters. The `loopcount` field is an integer that tells us how many iterations the algorithm took to converge.
 """
 function cluster(data::Array{<:Number,2}, algorithm::T; d = Euclidean(), verbose::Bool = false) where T <: MyAbstractUnsupervisedClusteringAlgorithm
     return _cluster(data, algorithm, d = d, verbose = verbose);
@@ -104,3 +117,5 @@ function configurationenergy(data::Array{<:Number,2}, assignments::Array{Int64,1
     # return the energy -
     return energy;
 end
+
+# -- PUBLIC API ABOVE HERE ------------------------------------------------------------------------------------------------------ #
