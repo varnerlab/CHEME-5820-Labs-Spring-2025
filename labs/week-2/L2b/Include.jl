@@ -18,6 +18,7 @@ using CSV
 using FileIO
 using LinearAlgebra
 using Statistics
+using KernelFunctions
 
 # load my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
