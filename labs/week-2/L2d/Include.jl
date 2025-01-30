@@ -20,3 +20,4 @@ using Statistics
 using Plots
 using Colors
 using Distances
+using PrettyTables
