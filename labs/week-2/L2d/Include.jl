@@ -19,3 +19,4 @@ using LinearAlgebra
 using Statistics
 using Plots
 using Colors
+using Distances
