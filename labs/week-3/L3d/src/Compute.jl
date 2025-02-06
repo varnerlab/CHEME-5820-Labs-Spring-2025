@@ -57,6 +57,7 @@ function _learn(features::Array{<:Number,2}, labels::Array{<:Number,1}, algorith
     L = algorithm.L; # loss function
     is_ok_to_continue = true;
     loop_counter = 1;
+    number_of_parameters = size(β,1); # how many parameters?
 
     # main loop -
     βᵢ = copy(β); # copy the coefficients, initial guess
@@ -71,9 +72,10 @@ function _learn(features::Array{<:Number,2}, labels::Array{<:Number,1}, algorith
             
             x = features[i,:]; # feature vector (n+1) x 1
             y = labels[i]; # classification -1,1
+            h = 0.01*(1/number_of_parameters)*norm(βᵢ); # step size
             
             # compute the gradient -
-            ∇L = ∇L .+ ∇f(L, x, y, βᵢ, 1e-6); # call forward diff approx of derivative
+            ∇L = ∇L .+ ∇f(L, x, y, βᵢ, h); # call forward diff approx of derivative
         end # end training loop for
         
         # update the coefficients -
@@ -126,6 +128,17 @@ end
 """
     learn(features::Array{<:Number,2}, labels::Array{<:Number,1}, algorithm::AbstractClassificationAlgorithm; 
         maxiter::Int64 = 100, verbose::Bool = false)
+
+The function learns a classification model from the data provided using the algorithm specified.
+This is a wrapper function that calls the internal function `_learn` whose implementation is algorithm-specific.
+
+### Arguments
+- `features::Array{<:Number,2}`: the features.
+- `labels::Array{<:Number,1}`: the labels.
+- `algorithm::AbstractClassificationAlgorithm`: the algorithm to use to learn the model.
+
+### Returns
+- the updated algorithm model.
 """
 function learn(features::Array{<:Number,2}, labels::Array{<:Number,1}, algorithm::AbstractClassificationAlgorithm; 
     maxiter::Int64 = 100, verbose::Bool = false)
