@@ -45,7 +45,7 @@ Generate random data points around a center point that have a label, and radius 
 - A 2D array of data points. The first two columns are the x and y coordinates of the data points, and the third column is the label.
 """
 function generatedatacloud(center::Tuple{Float64,Float64}; 
-    number_of_points::Int = 100, radius::Float64 = 1.0, label::Int64 = 1)::Array{Float64,2}
+    number_of_points::Int = 100, r₁::Float64 = 1.0, r₂::Float64 = 2.0, label::Int64 = 1)::Array{Float64,2}
 
     # initialize -
     data = zeros(number_of_points, 3);
@@ -54,7 +54,8 @@ function generatedatacloud(center::Tuple{Float64,Float64};
     for i ∈ 1:number_of_points
         
         θ = rand() * 2π; # random angle
-        r = rand() * radius; # random radius
+        l = rand();
+        r = (1-l)*r₁ + l*r₂ # random radius
 
         # generate random data points -
         data[i,1] = center[1] + r * cos(θ); # x

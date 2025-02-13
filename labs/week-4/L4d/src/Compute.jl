@@ -123,10 +123,11 @@ function _classify(features::Array{<:Number,2}, algorithm::MyPerceptronClassific
     return sign.(features*algorithm.β);
 end
 
-function _classify(test::Array{<:Number,1}, features::Array{<:Number,2}, labels::Array{<:Number,1}, 
-    algorithm::MyKNNClassificationModel)
+function _classify(test::Array{<:Number,1}, algorithm::MyKNNClassificationModel)
 
     # initialize -
+    features = algorithm.X;
+    labels = algorithm.y;
     number_of_examples = size(features,1); # number of rows
     distances = zeros(number_of_examples);
     K = algorithm.K;
@@ -134,14 +135,13 @@ function _classify(test::Array{<:Number,1}, features::Array{<:Number,2}, labels:
     counts = Dict{Int,Int}()
     invcounts = Dict{Int,Int}()
     
-
     # compute the distances for all training examples -
     for i ∈ 1:number_of_examples
         x = features[i,:];
         distances[i] = algorithm.d(test,x);
     end
 
-    # sort the distances -
+    # sort the distances 
     sorted_indices = sortperm(distances, rev=true);
 
     # get the K nearest neighbours -
@@ -158,7 +158,7 @@ function _classify(test::Array{<:Number,1}, features::Array{<:Number,2}, labels:
         end
     end
 
-    # build inverse counts -
+    # build inverse counts - keys: counts, values: labels
     for (key, val) in counts
         invcounts[val] = key
     end
@@ -202,8 +202,11 @@ function classify(features::Array{<:Number,2}, algorithm::AbstractClassification
 end
 
 
-function classify(test::Array{<:Number,1}, features::Array{<:Number,2}, labels::Array{<:Number,1}, algorithm::AbstractClassificationAlgorithm)
-    return _classify(test, features, labels, algorithm);
+"""
+    classify(test::Array{<:Number,1}, algorithm::AbstractClassificationAlgorithm)
+"""
+function classify(test::Array{<:Number,1}, algorithm::AbstractClassificationAlgorithm)
+    return _classify(test, algorithm);
 end
 
 """

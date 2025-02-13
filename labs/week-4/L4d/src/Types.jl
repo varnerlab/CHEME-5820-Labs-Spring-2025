@@ -48,6 +48,8 @@ mutable struct MyKNNClassificationModel <: AbstractClassificationAlgorithm
     # data -
     K::Int64; # number of neighbours to look at
     d::Function; # similarity function
+    X::Matrix{Float64}; # training data
+    y::Vector{Int64}; # training labels
 
     # empty constructor -
     MyKNNClassificationModel() = new();
