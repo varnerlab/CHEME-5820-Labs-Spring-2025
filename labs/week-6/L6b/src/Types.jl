@@ -8,6 +8,8 @@ mutable struct MyBinaryWeightedMajorityAlgorithmModel <: AbstractOnlineLearningM
     n::Int64 # number of experts
     T::Int64 # number of rounds
     weights::Array{Float64,2} # weights of the experts
+    expert::Function # expert function
+    adversary::Function # adversary function
 
     # default constructor -
     MyBinaryWeightedMajorityAlgorithmModel() = new();

@@ -1,4 +1,4 @@
-function play(model::MyBinaryWeightedMajorityAlgorithmModel, expert::Function, adversary::Function, 
+function play(model::MyBinaryWeightedMajorityAlgorithmModel, 
     data::Array{Float64,2})
 
     # initialize -
@@ -6,6 +6,8 @@ function play(model::MyBinaryWeightedMajorityAlgorithmModel, expert::Function, a
     T = model.T; # how many rounds do we play?
     ϵ = model.ϵ; # learning rate
     weights = model.weights; # weights of the experts
+    expert = model.expert; # expert function
+    adversary = model.adversary; # adversary function
     results_array = zeros(Int64, T, 3+n); # aggregator predictions
 
     # main simulation loop -
