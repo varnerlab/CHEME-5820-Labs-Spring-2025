@@ -1,3 +1,18 @@
+
+"""
+    play(model::MyBinaryWeightedMajorityAlgorithmModel, data::Array{Float64,2})
+
+Play the Binary Weighted Majority Algorithm. This function simulates the Binary Weighted Majority Algorithm
+using the given model and data. The function returns a tuple with two elements. The first element is a matrix
+with the results of the simulation. The second element is the weights of the experts at the end of the simulation.
+
+### Arguments
+- `model::MyBinaryWeightedMajorityAlgorithmModel`: the model to simulate
+- `data::Array{Float64,2}`: the data to use in the simulation
+
+### Returns
+- `Tuple{Array{Int64,2}, Array{Float64,2}}`: a tuple with the results of the simulation and the weights of the experts
+"""
 function play(model::MyBinaryWeightedMajorityAlgorithmModel, 
     data::Array{Float64,2})
 
