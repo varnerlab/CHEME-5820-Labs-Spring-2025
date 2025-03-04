@@ -106,50 +106,7 @@ end
 # PRIVATE METHODS ABOVE HERE ================================================================================= #
 
 # PUBLIC METHODS BELOW HERE ================================================================================== #`
-"""
-    solve(model::AbstractBanditAlgorithmModel; T::Int = 0, world::Function = _null)
-
-Solve the bandit problem using the given model. 
-
-### Arguments
-- `model::AbstractBanditAlgorithmModel`: The model to use to solve the bandit problem.
-- `T::Int = 0`: The number of rounds to play. Default is 0.
-- `world::Function = _null`: The function that returns the reward for a given action. Default is the private `_null` function.
-
-### Returns
-- `Array{Float64,2}`: The rewards for each arm at each round.
-"""
-function solve(model::AbstractBanditAlgorithmModel; T::Int = 0, world::Function = _null)::Array{Float64,2}
+function solve(model::AbstractBanditAlgorithmModel; T::Int = 0, world::Function = _null)
     return _solve(model, T = T, world = world);
-end
-
-function regret(rewards::Array{Float64,2})::Array{Float64,1}
-    
-    # initialize -
-    T = size(rewards, 1); # how many rounds did we play?
-    K = size(rewards, 2); # how many arms do we have?
-    regret = zeros(Float64, T); # initialize the regret array
-
-    # first: compute the best arm in hindsight -
-    μ = zeros(Float64, K); # average reward for each arm
-    for a ∈ 1:K
-        μ[a] = findall(x -> x != 0.0, rewards[:, a]) |> i-> mean(rewards[i, a]); # compute the average reward
-    end
-    μₒ = maximum(μ); # compute the best average reward
-
-    # compute the regret -
-    for t ∈ 1:T
-
-        # what action was taken at time t?
-        tmp = 0.0;
-        for j = 1:t
-            aₜ = argmax(rewards[j, :]); # get the action that was taken
-            tmp += μ[aₜ]; # compute the hypothetical average reward
-        end
-        regret[t] = μₒ*t - tmp; # compute the regret at time t
-    end
-
-    # return -
-    return regret;
 end
 # PUBLIC METHODS ABOVE HERE ================================================================================== #`
