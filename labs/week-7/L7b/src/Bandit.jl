@@ -123,6 +123,17 @@ function solve(model::AbstractBanditAlgorithmModel; T::Int = 0, world::Function 
     return _solve(model, T = T, world = world);
 end
 
+"""
+    regret(rewards::Array{Float64,2})::Array{Float64,1}
+
+Compute the regret for the given rewards.
+
+### Arguments
+- `rewards::Array{Float64,2}`: The rewards for each arm at each round.
+
+### Returns
+- `Array{Float64,1}`: The regret at each round.
+"""
 function regret(rewards::Array{Float64,2})::Array{Float64,1}
     
     # initialize -
