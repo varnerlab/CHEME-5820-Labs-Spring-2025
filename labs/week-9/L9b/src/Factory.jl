@@ -1,6 +1,21 @@
 # -- PUBLIC METHODS BELOW HERE ---------------------------------------------------------------------------------------- #
 """
-Fill me in.
+    build(modeltype::Type{MyClassicalHopfieldNetworkModel}, data::NamedTuple) -> MyClassicalHopfieldNetworkModel
+
+Factory method for building a Hopfield network model. 
+
+### Arguments
+- `modeltype::Type{MyClassicalHopfieldNetworkModel}`: the type of the model to be built.
+- `data::NamedTuple`: a named tuple containing the data for the model.
+
+The named tuple should contain the following fields:
+- `memories`: a matrix of memories (each column is a memory).
+
+### Returns
+- `model::MyClassicalHopfieldNetworkModel`: the built Hopfield network model with the following fields populated:
+    - `W`: the weight matrix.
+    - `b`: the bias vector.
+    - `energy`: a dictionary of energies for each memory.
 """
 function build(modeltype::Type{MyClassicalHopfieldNetworkModel}, data::NamedTuple)::MyClassicalHopfieldNetworkModel
 

@@ -53,10 +53,24 @@ end
 
 
 """
-    recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1}; miniterations::Int = 10000) -> Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
+    recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1}; 
+        maxiterations::Int = 1000, trueindex::Int = 2) -> Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
+
+This method takes a Hopfield network model and a random state and returns a dictionary of frames and a dictionary of energies what hold data for each iteration.
+
+### Arguments
+- `model::MyClassicalHopfieldNetworkModel`: a Hopfield network model.
+- `sₒ::Array{T,1}`: a random state.
+- `maxiterations::Int`: the maximum number of iterations.
+- `trueindex::Int`: the index of the true state (we index into the energy dictionary on model, use to stop the simulation early).
+
+### Returns
+A tuple of two dictionaries:
+- `frames::Dict{Int64, Array{Int32,1}}`: a dictionary of frames.
+- `energydictionary::Dict{Int64, Float32}`: a dictionary of energies.
 """
 function recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1}; 
-    miniterations::Int = 1000, trueindex::Int = 2)::Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
+    maxiterations::Int = 1000, trueindex::Int = 2)::Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
 
     # initialize -
     W = model.W;
@@ -82,7 +96,7 @@ function recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1};
         frames[iteration_counter] = copy(s); # save a copy
         
             
-        if ((energydictionary[iteration_counter] ≈ true_energy) || (iteration_counter ≥  miniterations))
+        if ((energydictionary[iteration_counter] ≈ true_energy) || (iteration_counter ≥  maxiterations))
             has_converged = true;
         end
         iteration_counter += 1;
