@@ -90,7 +90,8 @@ function recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1};
     while (has_converged == false)
         
         j = rand(1:number_of_pixels); # select a random pixel
-        s[j] = sign(transpose(W[j,:])*s - b[j]); # update the state
+        w = W[j,:]; # get the weights
+        s[j] = sign(dot(w,s) - b[j]); # update the state
 
         energydictionary[iteration_counter] = _energy(s, W, b);
         frames[iteration_counter] = copy(s); # save a copy

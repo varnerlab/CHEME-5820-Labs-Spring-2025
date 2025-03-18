@@ -33,7 +33,7 @@ function build(modeltype::Type{MyClassicalHopfieldNetworkModel}, data::NamedTupl
         Y = ⊗(linearimagecollection[:,j], linearimagecollection[:,j]); # compute the outer product -
         W += Y; # update the W -
     end
-    WN = (1/number_of_cols)*W; # normalize the W -
+    WN = (1/number_of_cols)*W; # normalize the W (no average)
 
     # generate a random bias vector -
     for i ∈ 1:number_of_rows
