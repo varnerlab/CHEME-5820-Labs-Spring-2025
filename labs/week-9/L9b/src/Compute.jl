@@ -1,17 +1,24 @@
-function _children(edges::Dict{Tuple{Int64, Int64}, Int64}, id::Int64)::Set{Int64}
+
+"""
+    energy(W::Array{T,2}, α::Array{T,1}, s::Array{T,1}) -> T where T <: Number
+"""
+function _energy(s::Array{<: Number,1}, W::Array{<:Number,2}, b::Array{<:Number,1})::Float32
     
     # initialize -
-    childrenset = Set{Int64}();
-    
-    # Dumb implementation - why?
-    for (k, _) ∈ edges
-        if k[1] == id
-            push!(childrenset, k[2]);
+    tmp_energy_state = 0.0;
+    number_of_states = length(s);
+
+    # main loop -
+    tmp = transpose(b)*s; # alias for the bias term
+    for i ∈ 1:number_of_states
+        for j ∈ 1:number_of_states
+            tmp_energy_state += W[i,j]*s[i]*s[j];
         end
     end
+    energy_state = -(1/2)*tmp_energy_state + tmp;
 
     # return -
-    return childrenset;
+    return energy_state;
 end
 
 """
@@ -44,28 +51,51 @@ function ⊗(a::Array{T,1}, b::Array{T,1})::Array{T,2} where T <: Number
     return Y
 end
 
+
 """
-    energy(W::Array{T,2}, α::Array{T,1}, s::Array{T,1}) -> T where T <: Number
+    recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1}; miniterations::Int = 10000) -> Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
 """
-function energy(s::Array{Int32,1}, W::Array{Int32,2}, α::Array{Float32,1})::Float32
-    
+function recover(model::MyClassicalHopfieldNetworkModel, sₒ::Array{T,1}; 
+    miniterations::Int = 1000, trueindex::Int = 2)::Tuple{Dict{Int64, Array{Int32,1}}, Dict{Int64, Float32}} where T <: Number
+
     # initialize -
-    tmp_energy_state = 0.0;
-    number_of_states = length(s);
+    W = model.W;
+    b = model.b;
+    true_energy = model.energy[trueindex];
 
-    # main loop -
-    b = transpose(α)*s; # alias for the bias term
-    for i ∈ 1:number_of_states
-        for j ∈ 1:number_of_states
-            tmp_energy_state += W[i,j]*s[i]*s[j];
+    # initialize -
+    frames = Dict{Int64, Array{Int32,1}}();
+    energydictionary = Dict{Int64, Float32}();
+    has_converged = false;
+
+    # setup -
+    frames[0] = copy(sₒ); # copy the initial random state
+    energydictionary[0] = _energy(sₒ,W, b); # initial energy
+    s = copy(sₒ); # initial state
+    iteration_counter = 1;
+    while (has_converged == false)
+        
+        j = rand(1:number_of_pixels); # select a random pixel
+        s[j] = sign(transpose(W[j,:])*s - b[j]); # update the state
+
+        energydictionary[iteration_counter] = _energy(s, W, b);
+        frames[iteration_counter] = copy(s); # save a copy
+        
+            
+        if ((energydictionary[iteration_counter] ≈ true_energy) || (iteration_counter ≥  miniterations))
+            has_converged = true;
         end
+        iteration_counter += 1;
     end
-    energy_state = -(1/2)*tmp_energy_state + b;
-
-    # return -
-    return energy_state;
+            
+    # return 
+    frames, energydictionary
 end
 
+
+"""
+    decode(simulationstate::Array{T,1}; number_of_rows::Int64 = 28, number_of_cols::Int64 = 28) -> Array{T,2}
+"""
 function decode(simulationstate::Array{T,1}; 
     number_of_rows::Int64 = 28, number_of_cols::Int64 = 28)::Array{T,2} where T <: Number
     
