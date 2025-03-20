@@ -22,14 +22,13 @@ mutable struct MyClassicalHopfieldNetworkModel <: AbstractlHopfieldNetworkModel
 end
 
 """
-    MyClassicalHopfieldNetworkModel <: AbstractlHopfieldNetworkModel
+    MyModernHopfieldNetworkModel <: AbstractlHopfieldNetworkModel
 
 A mutable struct representing a classical Hopfield network model.
 
 ### Fields
-- `W::Array{<:Number, 2}`: weight matrix.
-- `b::Array{<:Number, 1}`: bias vector.
-- `energy::Dict{Int64, Float32}`: energy of the states.
+- `X::Array{<:Number, 2}`: data matrix.
+- `β::Number`: beta parameter (inverse temperature).
 """
 mutable struct MyModernHopfieldNetworkModel <: AbstractlHopfieldNetworkModel
 
