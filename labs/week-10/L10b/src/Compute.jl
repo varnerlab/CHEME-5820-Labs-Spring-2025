@@ -1,5 +1,5 @@
 function simulate(model::MySimpleBoltzmannMachineModel, sₒ::Vector{Int}; 
-    T::Int = 100, β::Float64 = 1.0)::Tuple{Vector{Int}, Array{Int,2}, Array{Float64,1}}
+    T::Int = 100, β::Float64 = 1.0)::Array{Int,2}
     
     # initialize storage -
     W = model.W; # weight matrix
@@ -41,7 +41,19 @@ function simulate(model::MySimpleBoltzmannMachineModel, sₒ::Vector{Int};
     end
 
     # return the results -    
-    return (turns, S, energy);
+    return S;
+end
+
+
+function energy(model::MySimpleBoltzmannMachineModel, s::Vector{Int})::Float64
+
+    # initialize -
+    W = model.W; # weight matrix
+    b = model.b; # bias vector
+    energy = -(1/2)*dot(s, W*s) - dot(b, s); # compute the energy of the state
+
+    # return -
+    return energy;
 end
 
 function learn(model::MySimpleBoltzmannMachineModel, data::Array{Int64,2}, sₒ::Vector{Int}; 

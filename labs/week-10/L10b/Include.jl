@@ -12,6 +12,9 @@ end
 using LinearAlgebra
 using Statistics
 using Distributions
+using PrettyTables
+using DataFrames
+using StatsBase
 
 # include my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
