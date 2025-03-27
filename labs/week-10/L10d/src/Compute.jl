@@ -244,11 +244,21 @@ function learn(model::MyRestrictedBoltzmannMachineModel, data::Array{Int64,2}, p
             # sample - 
             (v,h) = simulate(model, xₒ, T = number_of_internal_steps, β = β);
 
-            # ok, so we have the visible and hidden states from sampling
+            # ok, so we have the visible and hidden states from sampling - weights
             for j ∈ 1:number_of_visible_neurons
                 for k ∈ 1:number_of_hidden_neurons
                     W[j,k] += η * (v[j, end] * h[k, end] - v[j, 1] * h[k, 1]); # update the weights - from GitHub Copilot - does this work?
                 end
+            end
+
+            # hidden bias update
+            for k ∈ 1:number_of_hidden_neurons
+                b[k] += η * (h[k, end] - h[k, 1]); # update the hidden bias
+            end
+
+            # visible bias update
+            for j ∈ 1:number_of_visible_neurons
+                a[j] += η * (v[j, end] - v[j, 1]); # update the visible bias
             end
         end
 
