@@ -1,3 +1,9 @@
+"""
+    _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedForwardPassModel, sₒ::Vector{Int}; 
+        T::Int = 100, β::Float64 = 1.0)
+
+Private method: Feedforward pass sampling
+"""
 function _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedForwardPassModel, sₒ::Vector{Int}; 
     T::Int = 100, β::Float64 = 1.0)
 
@@ -44,9 +50,14 @@ function _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedForwardPa
     return S;
 end
 
+"""
+    _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedbackPassModel, sₒ::Vector{Int}; 
+        T::Int = 100, β::Float64 = 1.0)
+
+Private method: Feedback pass sampling
+"""
 function _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedbackPassModel, sₒ::Vector{Int}; 
     T::Int = 100, β::Float64 = 1.0)
-
 
     # initialize -
     W = model.W; # weight matrix
@@ -90,7 +101,22 @@ function _sample(model::MyRestrictedBoltzmannMachineModel, pass::MyFeedbackPassM
     return S;
 end
 
+"""
+    simulate(model::MySimpleBoltzmannMachineModel, sₒ::Vector{Int}; 
+        T::Int = 100, β::Float64 = 1.0) -> Array{Int,2}
 
+Samples a general Boltzmann machine
+
+### Arguments
+- `model::MySimpleBoltzmannMachineModel`: the Boltzmann machine model to be simulated.
+- `sₒ::Vector{Int}`: the initial state of the neurons.
+- `T::Int`: number of internal steps for sampling.
+- `β::Float64`: inverse temperature parameter.
+
+### Returns
+- `S::Array{Int,2}`: a matrix of size (number_of_neurons, T) containing the sampled states.
+
+"""
 function simulate(model::MySimpleBoltzmannMachineModel, sₒ::Vector{Int}; 
     T::Int = 100, β::Float64 = 1.0)::Array{Int,2}
     
@@ -136,6 +162,23 @@ function simulate(model::MySimpleBoltzmannMachineModel, sₒ::Vector{Int};
     return S;
 end
 
+"""
+    simulate(model::MyRestrictedBoltzmannMachineModel, vₒ::Vector{Int}; 
+        T::Int = 100, β::Float64 = 1.0)
+
+Sample from a Restricted Boltzmann Machine (RBM) model. This does a forward pass
+and a feedback pass to sample the visible and hidden states.
+
+### Arguments
+- `model::MyRestrictedBoltzmannMachineModel`: the RBM model to be simulated.
+- `vₒ::Vector{Int}`: the initial visible state.
+- `T::Int`: number of internal steps for sampling.
+- `β::Float64`: inverse temperature parameter.
+
+### Returns 
+- `(v, h)`: a tuple containing the sampled visible state `v` and the hidden state `h`.
+
+"""
 function simulate(model::MyRestrictedBoltzmannMachineModel, vₒ::Vector{Int}; 
     T::Int = 100, β::Float64 = 1.0)
     
@@ -180,6 +223,18 @@ function softmax(x::Array{T,1})::Array{T,1} where T <: Number
     return θ;
 end
 
+"""
+    energy(model::MySimpleBoltzmannMachineModel, s::Vector{Int}) -> Float64
+
+Energy function for a Simple Boltzmann Machine model. Computes the energy of the state `s` given the model parameters.
+
+### Arguments
+- `model::MySimpleBoltzmannMachineModel`: the Boltzmann machine model.
+- `s::Vector{Int}`: the state of the neurons.
+
+### Returns
+- `energy::Float64`: the energy of the state.
+"""
 function energy(model::MySimpleBoltzmannMachineModel, s::Vector{Int})::Float64
 
     # initialize -
@@ -191,6 +246,19 @@ function energy(model::MySimpleBoltzmannMachineModel, s::Vector{Int})::Float64
     return energy;
 end
 
+"""
+    energy(model::MyRestrictedBoltzmannMachineModel, v::Vector{Int}, h::Vector{Int}) -> Float64
+
+Computes the energy of a Restricted Boltzmann machine given the visible state `v` and hidden state `h`, and the model parameters.
+
+### Arguments
+- `model::MyRestrictedBoltzmannMachineModel`: the RBM model.
+- `v::Vector{Int}`: the visible state.
+- `h::Vector{Int}`: the hidden state.
+
+### Returns
+- `energy::Float64`: the energy of the states
+"""
 function energy(model::MyRestrictedBoltzmannMachineModel, v::Vector{Int}, h::Vector{Int})::Float64
 
     # initialize -
@@ -203,7 +271,28 @@ function energy(model::MyRestrictedBoltzmannMachineModel, v::Vector{Int}, h::Vec
     return energy;
 end
 
+"""
+    learn(model::MyRestrictedBoltzmannMachineModel, data::Array{Int64,2}, p::Categorical;
+        maxnumberofiterations::Int = 100, T::Int = 100, β::Float64 = 1.0, batchsize::Int = 10, η::Float64 = 0.01,
+            verbose::Bool = true) -> MyRestrictedBoltzmannMachineModel
 
+Train a Restricted Boltzmann Machine (RBM) model using Contrastive Divergence (CD) algorithm.
+
+### Arguments
+- `model::MyRestrictedBoltzmannMachineModel`: the RBM model to be trained.
+- `data::Array{Int64,2}`: the training data, a matrix of size (number_of_visible_neurons, number_of_samples).
+- `p::Categorical`: a categorical distribution for sampling indices.
+- `maxnumberofiterations::Int`: maximum number of iterations for training.
+- `T::Int`: number of internal steps for sampling.
+- `β::Float64`: inverse temperature parameter.
+- `batchsize::Int`: size of the batch for training.
+- `η::Float64`: learning rate.
+- `verbose::Bool`: whether to print progress information.
+
+### Return 
+- `MyRestrictedBoltzmannMachineModel`: the trained RBM model.
+
+"""
 function learn(model::MyRestrictedBoltzmannMachineModel, data::Array{Int64,2}, p::Categorical;
     maxnumberofiterations::Int = 100, T::Int = 100, β::Float64 = 1.0, batchsize::Int = 10, η::Float64 = 0.01,
     verbose::Bool = true)::MyRestrictedBoltzmannMachineModel
