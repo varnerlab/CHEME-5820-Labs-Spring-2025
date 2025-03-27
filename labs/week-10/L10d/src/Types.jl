@@ -1,10 +1,10 @@
 abstract type AbstractBoltzmannMachineModel end
 abstract type AbstractPassModel end
 
-struct FeedForwardPassModel <: AbstractPassModel
+struct MyFeedForwardPassModel <: AbstractPassModel
 end
 
-struct FeedbackPassModel <: AbstractPassModel
+struct MyFeedbackPassModel <: AbstractPassModel
 end
 
 mutable struct MySimpleBoltzmannMachineModel <: AbstractBoltzmannMachineModel
