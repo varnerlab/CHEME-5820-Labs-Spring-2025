@@ -1,5 +1,19 @@
 abstract type AbstractTextRecordModel end
 abstract type AbstractTextDocumentCorpusModel end
+abstract type AbstractLayerModel end
+
+# build a simple neural network model type -
+struct MyFluxFeedForwardNeuralNetworkModel <: AbstractLayerModel
+    chain::Chain; # holds the model chain
+end
+
+struct MyFluxElmanRecurrentNeuralNetworkModel <: AbstractLayerModel
+    chain::Flux.Chain; # holds the model chain
+end
+
+struct MyFluxLSTMNeuralNetworkModel <: AbstractLayerModel
+    chain::Flux.Chain; # holds the model chain
+end
 
 """
     MySarcasmRecordModel <: AbstractTextRecordModel
