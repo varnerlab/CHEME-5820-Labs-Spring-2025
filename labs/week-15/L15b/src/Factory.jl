@@ -7,8 +7,11 @@ function build(modeltype::Type{MyLIFSpikingNeuralNetworkModel}, data::NamedTuple
     Δt = data.Δt; # time step
     τ = data.τ; # time constant
     number_of_nodes = data.number_of_nodes; # number of nodes in the network
-    W = data.W; # weight matrix
+    number_of_inputs = data.number_of_inputs; # number of inputs to the network
     ν = data.ν; # membrane potential
+
+    # build an initial W -
+    W = (ν^2)*rand(Float64, number_of_nodes, number_of_inputs); # weight matrix
 
     # set the model parameters -
     model.Δt = Δt; # time step

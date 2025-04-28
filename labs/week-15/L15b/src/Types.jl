@@ -7,7 +7,7 @@ mutable struct MyLIFSpikingNeuralNetworkModel <: AbstractSpikingNeuralNetworkMod
     number_of_nodes::Int64; # number of nodes in the network
     number_of_inputs::Int64; # number of inputs to the network
     W::Matrix{Float64}; # weight matrix
-    ν::Vector{Float64}; # membrane potential
+    ν::Float64; # membrane potential
     τ::Float64; # time constant
     Δt::Float64; # time step
 
