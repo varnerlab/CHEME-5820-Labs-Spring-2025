@@ -54,7 +54,9 @@ function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
         end
     end
     A = AN - P*P'; # A = A + P*P'
-    V = eigen(A) |> F -> F.vectors;   # eigenvectors 
+    V = eigen(A) |> F -> F.vectors;   # eigenvectors
+    
+    @show inv(V)
     
     # Build B -
     B = Array{Float64,2}(undef, number_of_hidden_states, number_of_inputs); # input matrix
@@ -65,7 +67,7 @@ function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
     end
 
     # Build C and D -
-    C = ones(Float64, number_of_outputs, number_of_hidden_states); # output matrix
+    C = 0.001*ones(Float64, number_of_outputs, number_of_hidden_states); # output matrix
     D = zeros(Float64, number_of_outputs, number_of_inputs); # feedforward matrix
 
     # Rotate -
@@ -76,7 +78,7 @@ function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
 
     # discritize (bilinear) -
     IM = Matrix{Float64}(I, number_of_hidden_states, number_of_hidden_states); # identity matrix
-    Ā = inv(IM - (Δt/2)*Λ)*(IM+(Δt/2)*Λ); # state transition matrix
+    Ā = inv(IM - (Δt/2)*Λ)*(IM+ (Δt/2)*Λ); # state transition matrix
     B̄ = inv(IM - (Δt/2)*Λ)*(Δt)*B̃; # input matrix
     C̄ = C̃;
     D̄ = D̃;

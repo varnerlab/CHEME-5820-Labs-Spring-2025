@@ -81,6 +81,8 @@ function solve(m::MyS5Model, input::Array{Float64}, T::Int64)::Tuple{Array{Float
         end
     end
 
+    @show size(H)
+
     # return -
     return Tₐ, H, Y;
 end
