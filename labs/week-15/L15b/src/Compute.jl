@@ -36,8 +36,7 @@ function solve(model::MyLIFSpikingNeuralNetworkModel,
 
             # can this neuron spike?
             dt = history[j]; # time since last spike
-            
-            if (H(V[i+1, j],ν) == 1 && dt == 0) # if the neuron spikes
+            if (H(V[i+1, j],ν) == 1 && dt == 0) # the neuron spikes, and not in refractory period
                 s[i+1, j] = 1; # set the spike train to 1
                 history[j] = Δ; # set the reactory period
             elseif (dt > 0) # if the neuron does not spike
@@ -50,5 +49,42 @@ function solve(model::MyLIFSpikingNeuralNetworkModel,
     return  Tₐ, V, s;
 end
 
+function solve(m::MyS5Model, input::Array{Float64}, T::Int64)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
+    
+    # initialize: get the model parameters -
+    Ā = m.Ā; # state transition matrix
+    B̄ = m.B̄; # input matrix
+    C̄ = m.C̄; # output matrix
+    D̄ = m.D̄; # feedforward matrix
+    Δt = m.Δt; # time step
+    number_of_hidden_states = m.number_of_hidden_states; # number of hidden states
+    number_of_outputs = m.number_of_output; # number of outputs from the model
+
+    # setup stuff required for the simulation -
+    Tₐ = range(1, stop=T*Δt, step = Δt) |> collect; # time
+    number_of_time_steps = length(Tₐ); # number of time steps
+    H = zeros(Float64, number_of_time_steps, number_of_hidden_states); # hidden state
+    Y = zeros(Float64, number_of_time_steps, number_of_outputs); # output
+
+    # main loop -
+    for i ∈ eachindex(Tₐ)
+        
+        Tᵢ = Tₐ[i]; # time step
+        uᵢ = input[:,i]; # input at time step i
+
+        if (Tᵢ == 1)
+            H[i, :] = B̄*uᵢ; # initial hidden state
+            Y[i, :] = C̄*H[i, :] + D̄*uᵢ; # initial output
+        else
+            H[i, :] = Ā*H[i-1, :] + B̄*uᵢ; # update the hidden state
+            Y[i, :] = C̄*H[i, :] + D̄*uᵢ; # update the output
+        end
+    end
+
+    # return -
+    return Tₐ, H, Y;
+end
+
 # fun hack!
-(m::MyLIFSpikingNeuralNetworkModel)(input::Array{Int}, T::Int64; Δ::Int = 3)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}} =  solve(m, input, T, Δ = Δ)
+#(m::MyS5Model)(input::Array{T<:Number}, T::Int64)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}} = _s5solve(m, input, T)
+#(m::MyLIFSpikingNeuralNetworkModel)(input::Array{Int}, T::Int64; Δ::Int = 3)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}} =  solve(m, input, T, Δ = Δ)
