@@ -1,7 +1,7 @@
 
 H(x,ν) = x ≥ ν ? 1 : 0 # Heaviside step function
 
-function solvessn(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int}; 
+function solve(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int}; 
     T::Int64 = 100, Δᵣ::Int = 3, sₒ::Array{Int64} = nothing)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
     
     # initialize: get the model parameters -
