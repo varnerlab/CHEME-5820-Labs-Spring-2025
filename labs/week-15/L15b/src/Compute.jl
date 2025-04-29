@@ -1,6 +1,25 @@
 
 H(x,ν) = x ≥ ν ? 1 : 0 # Heaviside step function
 
+"""
+    solve(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int}; 
+        T::Int64 = 100, Δᵣ::Int = 3, sₒ::Array{Int64} = nothing) -> Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
+
+Runs a LIF spiking neural network model for T time steps with a given input.
+
+### Arguments
+- `model::MyLIFSpikingNeuralNetworkModel`: The LIF spiking neural network model to run.
+- `input::Array{Int}`: The input to the model, a 2D array where each column is a time step.
+- `T::Int64`: The number of time steps to run the model for.
+- `Δᵣ::Int`: The refractory period for the neurons in the model.
+- `sₒ::Array{Int64}`: The initial spike train for the neurons in the model.
+
+### Returns
+- `Tuple{Array{Float64}, Array{Float64}, Array{Float64}}`: A tuple containing:
+    - The time steps of the simulation.
+    - The membrane potential of the neurons at each time step.
+    - The spike train of the neurons at each time step.
+"""
 function solve(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int}; 
     T::Int64 = 100, Δᵣ::Int = 3, sₒ::Array{Int64} = nothing)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
     
@@ -57,6 +76,22 @@ function solve(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int};
     return  Tₐ, V, s[2:end, :]; # return the time, membrane potential, and spike train
 end
 
+"""
+    solve(m::MyS5Model, input::Array{Float64}, T::Int64) -> Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
+
+Runs an S5 (simplified structured state space sequence) model for T time steps with a given input.
+
+### Arguments
+- `m::MyS5Model`: The S5 model to run.
+- `input::Array{Float64}`: The input to the model, a 2D array where each column is a time step.
+- `T::Int64`: The number of time steps to run the model for.
+
+### Returns
+- `Tuple{Array{Float64}, Array{Float64}, Array{Float64}}`: A tuple containing:
+    - The time steps of the simulation.
+    - The hidden state of the model at each time step.
+    - The output of the model at each time step.
+"""
 function solve(m::MyS5Model, input::Array{Float64}, T::Int64)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
     
     # initialize: get the model parameters -

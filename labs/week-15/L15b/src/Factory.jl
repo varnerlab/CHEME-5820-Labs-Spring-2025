@@ -1,3 +1,22 @@
+
+"""
+    build(modeltype::Type{MyLIFSpikingNeuralNetworkModel}, data::NamedTuple) -> MyLIFSpikingNeuralNetworkModel
+
+Factory function to build a MyLIFSpikingNeuralNetworkModel object.
+
+### Arguments
+- `modeltype::Type{MyLIFSpikingNeuralNetworkModel}`: The type of the model to build.
+- `data::NamedTuple`: A named tuple containing the model parameters. The named tuple should
+  contain the following fields:
+    - `number_of_nodes`: The number of nodes in the network.
+    - `number_of_inputs`: The number of inputs to the network.
+    - `Δt`: The time step.
+    - `τ`: The time constant.
+    - `ν`: The membrane potential.
+
+### Returns
+- a `MyLIFSpikingNeuralNetworkModel` object with the model parameters set.
+"""
 function build(modeltype::Type{MyLIFSpikingNeuralNetworkModel}, data::NamedTuple)::MyLIFSpikingNeuralNetworkModel
 
     # build an empty model -
@@ -25,6 +44,23 @@ function build(modeltype::Type{MyLIFSpikingNeuralNetworkModel}, data::NamedTuple
     return model;
 end
 
+"""
+    build(modeltype::Type{MyS5Model}, data::NamedTuple) -> MyS5Model
+
+Factory function to build a MyS5Model object.
+
+### Arguments
+- `modeltype::Type{MyS5Model}`: The type of the model to build.
+- `data::NamedTuple`: A named tuple containing the model parameters. The named tuple should
+  contain the following fields:
+    - `number_of_inputs`: The number of inputs to the network.
+    - `number_of_outputs`: The number of outputs from the model.
+    - `number_of_hidden_states`: The number of hidden states.
+    - `Δt`: The time step.
+
+### Returns
+- a `MyS5Model` object with the discretized state space model parameters set.
+"""
 function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
 
     # build an empty model -
