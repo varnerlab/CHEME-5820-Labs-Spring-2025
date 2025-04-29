@@ -1,8 +1,8 @@
 
 H(x,ν) = x ≥ ν ? 1 : 0 # Heaviside step function
 
-function solve(model::MyLIFSpikingNeuralNetworkModel, 
-    input::Array{Int}, T::Int64; Δ::Int = 3)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
+function solvessn(model::MyLIFSpikingNeuralNetworkModel, input::Array{Int}; 
+    T::Int64 = 100, Δᵣ::Int = 3, sₒ::Array{Int64} = nothing)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
     
     # initialize: get the model parameters -
     W = model.W; # weight matrix
@@ -18,6 +18,14 @@ function solve(model::MyLIFSpikingNeuralNetworkModel,
     s = zeros(Float64, number_of_time_steps+1, number_of_nodes); # spike train 
     V = ν*rand(Float64, number_of_time_steps+1, number_of_nodes); # membrane potential is initially zero?
     history = Dict{Int, Int}(); # history of the neuron spikes
+
+    # check: do we have an initial spike train?
+    if isnothing(sₒ) == false
+        for i ∈ 1:number_of_nodes
+            s[1,i] = sₒ[i]; # set the initial spike train
+        end
+    end
+
 
     # initialize the history to 0 -
     for i ∈ 1:number_of_nodes
@@ -38,7 +46,7 @@ function solve(model::MyLIFSpikingNeuralNetworkModel,
             dt = history[j]; # time since last spike
             if (H(V[i+1, j],ν) == 1 && dt == 0) # the neuron spikes, and not in refractory period
                 s[i+1, j] = 1; # set the spike train to 1
-                history[j] = Δ; # set the reactory period
+                history[j] = Δᵣ; # set the reactory period
             elseif (dt > 0) # if the neuron does not spike
                 history[j] = dt - 1; # decrement the time since last spike
             end            
@@ -46,7 +54,7 @@ function solve(model::MyLIFSpikingNeuralNetworkModel,
     end
 
     # return -
-    return  Tₐ, V, s;
+    return  Tₐ, V, s[2:end, :]; # return the time, membrane potential, and spike train
 end
 
 function solve(m::MyS5Model, input::Array{Float64}, T::Int64)::Tuple{Array{Float64}, Array{Float64}, Array{Float64}}
@@ -69,19 +77,21 @@ function solve(m::MyS5Model, input::Array{Float64}, T::Int64)::Tuple{Array{Float
     # main loop -
     for i ∈ eachindex(Tₐ)
         
-        Tᵢ = Tₐ[i]; # time step
         uᵢ = input[:,i]; # input at time step i
 
-        if (Tᵢ == 1)
+        if (i == 1)
             H[i, :] = B̄*uᵢ; # initial hidden state
             Y[i, :] = C̄*H[i, :] + D̄*uᵢ; # initial output
         else
             H[i, :] = Ā*H[i-1, :] + B̄*uᵢ; # update the hidden state
             Y[i, :] = C̄*H[i, :] + D̄*uᵢ; # update the output
         end
-    end
 
-    @show size(H)
+        # check for negatives -
+        if (any(H[i, :] .< 0))
+            H[i,:] = max.(H[i,:], 0); # set negative values to zero
+        end
+    end
 
     # return -
     return Tₐ, H, Y;

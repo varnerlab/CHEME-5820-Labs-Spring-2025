@@ -56,8 +56,6 @@ function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
     A = AN - P*P'; # A = A + P*P'
     V = eigen(A) |> F -> F.vectors;   # eigenvectors
     
-    @show inv(V)
-    
     # Build B -
     B = Array{Float64,2}(undef, number_of_hidden_states, number_of_inputs); # input matrix
     for i ∈ 1:number_of_inputs
@@ -67,21 +65,26 @@ function build(modeltype::Type{MyS5Model}, data::NamedTuple)::MyS5Model
     end
 
     # Build C and D -
-    C = 0.001*ones(Float64, number_of_outputs, number_of_hidden_states); # output matrix
+    C = randn(Float64, number_of_outputs, number_of_hidden_states); # output matrix
     D = zeros(Float64, number_of_outputs, number_of_inputs); # feedforward matrix
 
     # Rotate -
-    Λ = inv(V)*A*V;
-    B̃ = inv(V)*B;
+    Λ = inv(V)*A*V |> M-> round.(M, digits = 4); # diagonalize A
+    B̃ = (1/number_of_inputs)*inv(V)*B;
     C̃ = C*V;
     D̃ = D*V;
 
     # discritize (bilinear) -
     IM = Matrix{Float64}(I, number_of_hidden_states, number_of_hidden_states); # identity matrix
-    Ā = inv(IM - (Δt/2)*Λ)*(IM+ (Δt/2)*Λ); # state transition matrix
+    Ā = inv(IM - (Δt/2)*Λ)*(IM + (Δt/2)*Λ); # state transition matrix
     B̄ = inv(IM - (Δt/2)*Λ)*(Δt)*B̃; # input matrix
     C̄ = C̃;
     D̄ = D̃;
+    # Ā = exp(Λ*Δt); # state transition matrix
+    # B̄ = inv(Λ)*(IM - Λ)*B̃; # input matrix
+    # C̄ = C̃;
+    # D̄ = D̃;
+
 
     # set parameters on the model -
     model.Δt = Δt; # time step
