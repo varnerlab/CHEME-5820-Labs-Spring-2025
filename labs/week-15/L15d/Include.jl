@@ -19,6 +19,9 @@ using LinearAlgebra
 using MLDatasets
 using Random
 using Statistics
+import GraphMakie
+import CairoMakie as Makie
+using Graphs
 Random.seed!(1);
 
 # load my codes -

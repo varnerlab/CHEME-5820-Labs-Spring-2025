@@ -15,7 +15,8 @@ function eval_loss_accuracy(model, data_loader, device)
 end
 
 function train!(model; epochs=200, η=1e-2, infotime=10)
-	# device = Flux.gpu # uncomment this for GPU training
+	
+    # device = Flux.gpu # uncomment this for GPU training
 	device = Flux.cpu
 	model = model |> device
 	opt_state = Flux.setup(Adam(η), model)
