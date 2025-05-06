@@ -1,6 +1,8 @@
 function learn(agent::MyDQNLearningAgentModel, worldmodel::Function; 
     context::MyDQNworldContextModel = nothing,
-    maxnumberofsteps::Int = 100, numberofepisodes::Int64 = 1, 
+    maxnumberofsteps::Int = 192, 
+    numberofepisodes::Int64 = 1, 
+    γ::Float64 = 0.99,
     maxreplaybuffersize::Int64 = 1000, 
     trainfreq::Int64 = 10, 
     parameterupdatefreq::Int64 = 10,
@@ -9,15 +11,15 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
     # initialize -
     M = agent.mainnetwork; # main network
     T = agent.targetnetwork; # target network
-    γ = agent.γ; # discount factor
+    number_of_inputs = agent.number_of_inputs; # number of inputs
     actions = agent.actions; # actions
     K = length(actions); # number of actions that we have
-    λ = 0.01; # learning rate (default: 0.01)
+    λ = 0.50; # learning rate (default: 0.01)
     β = 0.90; # momentum parameter (default: 0.90)
     loss(ŷ, y) = Flux.Losses.mse(ŷ, y, agg=mean); # loss function
 
     # setup the replay buffer -
-    replaybuffer = CircularBuffer{Tuple{Vector{Float64},Vector{Float64}, Float64, Vector{Float64}}}(maxreplaybuffersize); # replay buffer
+    replaybuffer = CircularBuffer{Tuple{Vector{Float32},Vector{Float32}, Float32, Vector{Float32}}}(maxreplaybuffersize); # replay buffer
 
     # main loop -
     for i ∈ 1:numberofepisodes
@@ -26,7 +28,8 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
         optstate = Flux.setup(Momentum(λ, β), M); # we are optimize the parameters of the main network
 
         # time loop -
-        s = nothing; # state -
+        s = zeros(Float32, number_of_inputs);
+        s[1] = 1.0; # initial state
         for t ∈ 1:maxnumberofsteps
             
             # compute the ϵ -
@@ -53,14 +56,14 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
                 
                 # setup training minibatch (formulated in the proper format)
                 for eⱼ ∈ minibatch
-                    s, aₜ, r, s′ = eⱼ; # unpack the minibatch
+                    s̄, ā, r̄, n = eⱼ; # unpack the minibatch
 
                     # compute y (from the target network) -
-                    y = r + γ * (T(s) |> U -> argmax(p)) |> Float32 # compute the y value
+                    y = r̄ + γ * (T(s̄) |> U -> argmax(p)) |> Float32 # compute the y value
                     
                     # compute the ŷ (from the main network) -
                     grads = Flux.gradient(M) do m
-                        ŷ = m(s′) |> U -> argmax(p) |> Float32 # compute the ŷ
+                        ŷ = m(n) |> U -> argmax(p) |> Float32 # compute the ŷ
                         loss(ŷ, y)
                     end
 

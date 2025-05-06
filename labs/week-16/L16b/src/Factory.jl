@@ -17,22 +17,67 @@ The NamedTuple should contain the following fields:
 ### Returns
     - model::MyDQNLearningAgentModel: the built model
 """
-function build(modeltype::Type{MyDQNLearningAgentModel}, data::NamedTuple)::MyDQNLearningAgentModel
+function build(modeltype::Type{MyDQNLearningAgentModel}, data::NamedTuple)
 
     # initialize -
     model = modeltype(); # build an empty model
 
     # get data from the NamedTuple -
-    γ = data.γ; # discount factor
-    α = data.α; # learning rate
     mainnetwork = data.mainnetwork; # main network
     targetnetwork = data.targetnetwork; # target network
+    Δ = data.Δ; # perturbation
+    K = data.number_of_inputs;
+    number_of_actions = data.number_of_actions; # number of actions
+
+    # actions -
+    actions::Dict{Int64, Vector{Float32}} = Dict{Int64, Vector{Float32}}(); # actions
     
+    # up actions -
+    UP = Δ*Matrix{Float32}(I, K, K); # UP is the identity matrix
+    linearindex = 1;
+    for i ∈ 1:K
+        actions[linearindex] = UP[:,i]; # assign the UP action
+        linearindex += 1;
+    end
+    
+    # down actions -
+    DOWN = -Δ*Matrix{Float32}(I, K, K); # DOWN is the identity matrix
+    for i ∈ 1:K
+        actions[linearindex] = DOWN[:,i]; # assign the UP action
+        linearindex += 1;
+    end
+
     # assign data to the model -
-    model.γ = γ; # discount factor
-    model.α = α; # learning rate
     model.mainnetwork = mainnetwork; # main network
     model.targetnetwork = targetnetwork; # target network
+    model.actions = actions; # actions
+    model.number_of_actions = number_of_actions; # number of actions
+    model.number_of_inputs = K; # number of inputs
+
+    # return -
+    return model;
+end
+
+function build(modeltype::Type{MyDQNworldContextModel}, data::NamedTuple)::MyDQNworldContextModel
+
+    # initialize -
+    m = data.m; # number of arms categories of goods
+    γ = data.γ; # consumer's preference for each category of goods
+    σ = data.σ; # uncetainty of consumer's preference for each category of goods
+    Z = data.Z; # consumer's error model
+    C = data.C; # price of each good in each category
+    λ = data.λ; # how budget sensitive the consumer is
+    B = data.B; # consumer's budget
+
+    # build empty model -
+    model = modeltype();
+    model.m = m;
+    model.γ = γ;
+    model.σ = σ;
+    model.Z = Z;
+    model.C = C;
+    model.λ = λ;
+    model.B = B;
 
     # return -
     return model;

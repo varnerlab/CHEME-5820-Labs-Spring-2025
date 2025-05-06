@@ -10,13 +10,11 @@ end
 mutable struct  MyDQNLearningAgentModel<: AbstractLearningModel
 
     # initialization -
-    γ::Float64 # discount factor
-    α::Float64 # learning rate
-    actions::Dict{Int64, Vector{Float64}} # actions
+    actions::Dict{Int64, Vector{Float32}} # actions
     mainnetwork::Chain # main network
     targetnetwork::Chain # target network
-    number_of_inputs::Int64 # number of inputs for the state space
-    number_of_outputs::Int64 # number of outputs for the action space
+    number_of_actions::Int64 # number of actions
+    number_of_inputs::Int64 # number of inputs
 
     # empty constructor -
     MyDQNLearningAgentModel() = new();
@@ -27,8 +25,8 @@ mutable struct MyDQNworldContextModel <: AbstractWorldContextModel
     # data -
     m::Int64 # number of of goods to choose from
     γ::Array{Int64,1} # consumer's preference for each category of goods
-    σ::Array{Float64,1} # uncetainty of consumer's preference for each category of goods
-    C::Array{Float64,1} # price of each good in each category
+    σ::Array{Float32,2} # uncetainty of consumer's preference for each category of goods, and the price of each good in each category
+    C::Array{Float32,1} # price of each good in each category
     λ::Float64 # how budget sensitive the consumer is
     B::Float64 # consumer's budget
     Z::Normal # consumer's preference for each category of goods

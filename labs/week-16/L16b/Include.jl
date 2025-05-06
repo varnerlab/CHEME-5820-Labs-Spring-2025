@@ -15,6 +15,7 @@ using Flux
 using LinearAlgebra
 using Statistics
 using DataStructures
+using Distributions
 
 # load my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
