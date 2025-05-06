@@ -8,11 +8,11 @@ Build a DQN learning agent model from a NamedTuple of data.
     - data::NamedTuple: a NamedTuple containing the data to build the model
 
 The NamedTuple should contain the following fields:
-    - γ: discount factor
-    - α: learning rate
-    - mainnetwork: main network
-    - targetnetwork: target network
-    - replaybuffer: replay buffer
+    - mainnetwork::Chain: the main network
+    - targetnetwork::Chain: the target network
+    - Δ::Float32: the perturbation
+    - number_of_inputs::Int64: the number of inputs
+    - number_of_actions::Int64: the number of actions
 
 ### Returns
     - model::MyDQNLearningAgentModel: the built model
@@ -58,6 +58,25 @@ function build(modeltype::Type{MyDQNLearningAgentModel}, data::NamedTuple)
     return model;
 end
 
+"""
+    build(modeltype::Type{MyDQNworldContextModel}, data::NamedTuple) -> MyDQNworldContextModel
+
+Build a DQN world context model from a NamedTuple of data.
+
+### Arguments
+    - modeltype::Type{MyDQNworldContextModel}: the type of the model to build
+    - data::NamedTuple: a NamedTuple containing the data to build the model
+The NamedTuple should contain the following fields:
+    - m::Int64: the number of arms categories of goods
+    - γ::Array{Int64,1}: consumer's preference for each category of goods
+    - σ::Array{Float32,2}: uncertainty of consumer's preference for each category of goods, and the price of each good in each category
+    - C::Array{Float32,1}: price of each good in each category
+    - λ::Float64: how budget sensitive the consumer is
+    - B::Float64: consumer's budget
+
+### Returns
+    - model::MyDQNworldContextModel: the built model
+"""
 function build(modeltype::Type{MyDQNworldContextModel}, data::NamedTuple)::MyDQNworldContextModel
 
     # initialize -

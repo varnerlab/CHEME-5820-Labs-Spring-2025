@@ -1,3 +1,32 @@
+"""
+    learn(agent::MyDQNLearningAgentModel, worldmodel::Function; 
+        context::MyDQNworldContextModel = nothing,
+        maxnumberofsteps::Int = 192, 
+        numberofepisodes::Int64 = 1, 
+        γ::Float64 = 0.95,
+        maxreplaybuffersize::Int64 = 1000, 
+        trainfreq::Int64 = 10, 
+        parameterupdatefreq::Int64 = 10,
+        minibatchsize::Int64 = 64) -> MyDQNLearningAgentModel
+
+A method to learn a DQN agent using a world model.
+
+### Arguments
+    - agent::MyDQNLearningAgentModel: the DQN agent to learn
+    - worldmodel::Function: the world model to use
+    - context::MyDQNworldContextModel: the context of the world model
+    - maxnumberofsteps::Int: the maximum number of steps to take in each episode. Default is 192.
+    - numberofepisodes::Int64: the number of episodes to run. Default is 1.
+    - γ::Float64: the discount factor. Default is 0.95.
+    - maxreplaybuffersize::Int64: the maximum size of the replay buffer. Default is 1000.
+    - trainfreq::Int64: the frequency of training. Default is 10.
+    - parameterupdatefreq::Int64: the frequency of parameter updates. Default
+    - minibatchsize::Int64: the size of the minibatch. Default is 64.
+
+### Returns
+    - agent::MyDQNLearningAgentModel: the learned DQN agent with updated parameters
+
+"""
 function learn(agent::MyDQNLearningAgentModel, worldmodel::Function; 
     context::MyDQNworldContextModel = nothing,
     maxnumberofsteps::Int = 192, 
@@ -45,10 +74,7 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
 
             # implement action -
             s′, r = worldmodel(s, aₜ, context); # get the next state and reward for the world
-            if r ≤ 0
-                r = -1000000000000.0 |> Float32; # assign a large negative reward
-            end
-            
+                
             # store the transition in the replay buffer -
             push!(replaybuffer, (s, aₜ, r, s′)); # store the transition in the replay buffer
             if (isfull(replaybuffer) == true && rem(t, trainfreq) == 0)
