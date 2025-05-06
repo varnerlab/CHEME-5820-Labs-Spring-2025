@@ -25,7 +25,7 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
         # Get the networks, and setup the optimizer - 
         M = agent.mainnetwork; # main network
         T = agent.targetnetwork; # target network
-        optstate = Flux.setup(Momentum(λ, β), M); # we are optimize the parameters of the main network
+        optstate = Flux.setup(AdaGrad(), M); # we are optimize the parameters of the main network
         
         # time loop -
         s = ones(Float32, number_of_inputs);
@@ -40,11 +40,14 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
             if p ≤ ϵₜ
                 aₜ = rand(1:K) |> i-> actions[i]; # generate a random action
             elseif p > ϵₜ
-                aₜ = M(s) |> U -> NNlib.softmax(U) |> p -> argmax(p) |> i -> actions[i]; # generate a greedy action
+                aₜ = M(s) |> U -> argmax(U) |> i -> actions[i]; # generate a greedy action
             end
 
             # implement action -
             s′, r = worldmodel(s, aₜ, context); # get the next state and reward for the world
+            if r ≤ 0
+                r = -1000000000000.0 |> Float32; # assign a large negative reward
+            end
             
             # store the transition in the replay buffer -
             push!(replaybuffer, (s, aₜ, r, s′)); # store the transition in the replay buffer
@@ -58,11 +61,11 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
                     s̄, ā, r̄, n = eⱼ; # unpack the minibatch
 
                     # compute y (from the target network) -
-                    y = r̄ + γ * (T(s̄) |> U -> argmax(p)) |> Float32 # compute the y value
+                    y = r̄ + γ * (T(n) |> U -> argmax(U)) |> Float32 # compute the y value
                     
                     # compute the ŷ (from the main network) -
                     grads = Flux.gradient(M) do m
-                        ŷ = m(n) |> U -> argmax(p) |> Float32 # compute the ŷ
+                        ŷ = m(s̄) |> U -> argmax(U) |> Float32 # compute the ŷ
                         loss(ŷ, y)
                     end
 
