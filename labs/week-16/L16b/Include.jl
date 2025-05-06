@@ -14,6 +14,7 @@ using NNlib
 using Flux
 using LinearAlgebra
 using Statistics
+using DataStructures
 
 # load my codes -
 include(joinpath(_PATH_TO_SRC, "Types.jl"));
