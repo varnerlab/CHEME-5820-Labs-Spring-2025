@@ -2,15 +2,13 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
     context::MyDQNworldContextModel = nothing,
     maxnumberofsteps::Int = 192, 
     numberofepisodes::Int64 = 1, 
-    γ::Float64 = 0.99,
+    γ::Float64 = 0.95,
     maxreplaybuffersize::Int64 = 1000, 
     trainfreq::Int64 = 10, 
     parameterupdatefreq::Int64 = 10,
     minibatchsize::Int64 = 64)::MyDQNLearningAgentModel
 
     # initialize -
-    M = agent.mainnetwork; # main network
-    T = agent.targetnetwork; # target network
     number_of_inputs = agent.number_of_inputs; # number of inputs
     actions = agent.actions; # actions
     K = length(actions); # number of actions that we have
@@ -24,12 +22,13 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
     # main loop -
     for i ∈ 1:numberofepisodes
         
-        # stuff goes here -  
+        # Get the networks, and setup the optimizer - 
+        M = agent.mainnetwork; # main network
+        T = agent.targetnetwork; # target network
         optstate = Flux.setup(Momentum(λ, β), M); # we are optimize the parameters of the main network
-
+        
         # time loop -
-        s = zeros(Float32, number_of_inputs);
-        s[1] = 1.0; # initial state
+        s = ones(Float32, number_of_inputs);
         for t ∈ 1:maxnumberofsteps
             
             # compute the ϵ -
@@ -78,12 +77,18 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
 
             # do I need to do this?
             agent.mainnetwork = M; # update the main network
-            agent.targetnetwork = T; # update the target network    
+            agent.targetnetwork = T; # update the target network 
+            
+            # update the state -
+            s = s′; # update the state
         end
 
         # reset -
-        empty!(replaybuffer); # empty the replay buffers after each episode
+        # empty!(replaybuffer); # empty the replay buffers after each episode
     end
+
+    # grab the replay buffer, store in agent -
+    agent.replaybuffer = replaybuffer; # store the replay buffer in the agent
 
     return agent; # return the updated agent
 end

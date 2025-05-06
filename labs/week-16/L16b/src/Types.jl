@@ -15,6 +15,7 @@ mutable struct  MyDQNLearningAgentModel<: AbstractLearningModel
     targetnetwork::Chain # target network
     number_of_actions::Int64 # number of actions
     number_of_inputs::Int64 # number of inputs
+    replaybuffer::CircularBuffer{Tuple{Vector{Float32},Vector{Float32}, Float32, Vector{Float32}}} # replay buffer
 
     # empty constructor -
     MyDQNLearningAgentModel() = new();
