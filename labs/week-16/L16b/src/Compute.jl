@@ -54,8 +54,10 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
         # Get the networks, and setup the optimizer - 
         M = agent.mainnetwork; # main network
         T = agent.targetnetwork; # target network
-        optstate = Flux.setup(AdaGrad(), M); # we are optimize the parameters of the main network
+        optstate = Flux.setup(Descent(), M); # we are optimize the parameters of the main network
         
+        println("Episode: ", i); # print the episode number
+
         # time loop -
         s = ones(Float32, number_of_inputs);
         for t ∈ 1:maxnumberofsteps
@@ -101,7 +103,8 @@ function learn(agent::MyDQNLearningAgentModel, worldmodel::Function;
 
             # check - update the target network?
             if (rem(t, parameterupdatefreq) == 0)
-                T = deepcopy(M); # update the target network - this is a simple way to do it, but I'm assuming slow!
+                modelstate = Flux.state(M); # update the target network
+                Flux.loadmodel!(T, modelstate);
             end
 
             # do I need to do this?
