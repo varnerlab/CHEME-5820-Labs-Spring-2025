@@ -46,7 +46,8 @@ end
 
 
 function (l::MyCustomConvolutionLayerModel)(g::GNNGraph, x::AbstractMatrix)
-	message(xi, xj, e) = l.W2 * xj
+	
+    message(xi, xj, e) = l.W2 * xj
 	m = apply_edges(message, g, xj=x) # size [nout, num_edges]
 	xnew = aggregate_neighbors(g, +, m) # size [nout, num_nodes]
 	# m = propagate(message, g, +, xj=x) # equivalent to the 2 lines above
